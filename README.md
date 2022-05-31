@@ -1,4 +1,5 @@
-# Zillow 2017 SF Properties Property Tax Predictions Model
+# Zillow 2017 Single Family Properties 
+# Property Tax Predictions Model
 
 ## <u> Project Description: </u>
 
