@@ -39,23 +39,16 @@ def get_new_zillow_data():
     return pd.read_sql(sql, get_db_url("zillow"))
 
 
-#def handle_nulls(df):    
-    # We keep 99.41% of the data after dropping nulls
-    # round(df.dropna().shape[0] / df.shape[0], 4) returned .9941
+def handle_nulls(df):    
+    # We still have 99.8% of our dataset left after dropping all nulls
     df = df.dropna()
     return df
 
-#def drop_columns(df):
-    #dropping taxamount as it will interfere with predicting future property values
-    df = df.drop(columns=['taxamount'])
-    return df
 
-
-#def optimize_types(df):
+def change_dtypes(df):
     # Convert some columns to integers
     # fips, yearbuilt, and bedrooms can be integers
     df["fips"] = df["fips"].astype(int)
-    df["yearbuilt"] = df["yearbuilt"].astype(int)
     df["bedroomcnt"] = df["bedroomcnt"].astype(int)    
     df["taxvaluedollarcnt"] = df["taxvaluedollarcnt"].astype(int)
     df["calculatedfinishedsquarefeet"] = df["calculatedfinishedsquarefeet"].astype(int)
@@ -63,20 +56,28 @@ def get_new_zillow_data():
 
 
 
-#def handle_outliers(df):
-    """Manually handle outliers that do not represent properties likely for 99% of buyers and zillow visitors"""
-    df = df[df.bathroomcnt <= 6]
+def handle_outliers(df):
+    """Manually handle outliers that do not represent properties likely for 99.8% of buyers and zillow visitors"""
+    df = df[df.calculatedfinishedsquarefeet <= 9_000]
     
+    df = df[df.calculatedfinishedsquarefeet >= 200]
+
     df = df[df.bedroomcnt <= 6]
 
-    df = df[df.taxvaluedollarcnt < 2_000_000]
+    df=df[df.bedroomcnt != 0]
 
-    df = df[df.calculatedfinishedsquarefeet < 20_000]
+    df = df[df.bathroomcnt <= 6]
+
+    df=df[df.bathroomcnt != 0]
+
+    df = df[df.taxvaluedollarcnt <= 2_500_000]
+
+    df = df[df.taxvaluedollarcnt >= 45_000]
 
     return df
 
 #using a function to set the Fips codes into their different counties.
-#def clearing_fips(df):
+def clearing_fips(df):
     '''This function takes in a DataFrame of unprepared Zillow information and generates a new
     'county' column, with the county name based on the FIPS code. 
     '''
@@ -93,7 +94,7 @@ def get_new_zillow_data():
     return df
 
 
-#def wrangle_zillow():
+def wrangle_zillow():
     """
     Acquires Zillow data
     Handles nulls
@@ -105,9 +106,7 @@ def get_new_zillow_data():
 
     df = handle_nulls(df)
 
-    df = drop_columns(df)
-
-    df = optimize_types(df)
+    df = change_dtypes(df)
 
     df = handle_outliers(df)
 
