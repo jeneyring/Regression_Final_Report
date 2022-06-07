@@ -12,7 +12,7 @@ These files will be pulling the zillow data from the MySQL database to
 collect the properties_2017, predictions_2017 and propertylandusetype tables.
 
 How to use this py file: 
-Use `from wrangle import wrangle_zillow` at the top of your notebook.
+Use `from acquire import wrangle_zillow` at the top of your notebook.
 
 """
 def get_zillow_data():
@@ -93,6 +93,10 @@ def clearing_fips(df):
     df['county'] = np.select(fips, counties)
     return df
 
+def month_sales(df):
+    df['month'] = pd.DatetimeIndex(df['transactiondate']).month
+    return df
+
 
 def wrangle_zillow():
     """
@@ -109,9 +113,12 @@ def wrangle_zillow():
     df = change_dtypes(df)
 
     df = handle_outliers(df)
-
+    
     df = clearing_fips(df)
+
+    df = month_sales(df)
 
     df.to_csv("zillow.csv", index=False)
 
     return df
+
