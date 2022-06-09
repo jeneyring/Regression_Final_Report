@@ -32,18 +32,12 @@ The Final_Report file is a small snippet of the Scratchpad walkthrough, to show 
 | transactiondate   |  52441 non-null: object | date of property transactions|
 | fips |  52441 non-null: float64 | non-null: float64| fips code (county/state)|
 
-
-## <u> Project Planning: </u>
-
 ## <u> How to Replicate: </u>
-
-## <u> Key Findings/Recommendations: </u>
-# Classification_Final_Report
-
-### <b>Project Description:</b><br>
-
-
- ### <b>Initial Hypothesis and Questions:</b><br>
+- download project files
+- call in dataset using 'from wrangle import wrangle_data()' {attached in wrangle.py}
+- call in prepare, scale and split data from the functions in prepare.py file
+- explore visualizations from the viz.py functions
+- create the models from the model.py file
 
 #### Hypothesis 1 
 > - alpha = 0.05
