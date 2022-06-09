@@ -44,18 +44,18 @@ def drop_columns_ols(train, validate, test):
     validate_scaled = validate.copy()
     test_scaled = test.copy()
 
-    train_scaled.drop(columns = ['bedroomcnt', 'bathroomcnt', 'fips','month'], inplace=True)
+    train_scaled.drop(columns = ['bedroomcnt', 'bathroomcnt', 'fips','yearbuilt','county'], inplace=True)
     return train_scaled
 
 def X_y_models(train_scaled, validate_scaled, test_scaled):
 
-    X_train = train_scaled[['bedroomcnt', 'bathroomcnt', 'taxvaluedollarcnt', 'calculatedfinishedsquarefeet','fips','transactionid','month']]
+    X_train = train_scaled[['calculatedfinishedsquarefeet']]
     y_train = train_scaled['taxvaluedollarcnt']
 
-    X_validate = validate_scaled[['bedroomcnt', 'bathroomcnt', 'taxvaluedollarcnt', 'calculatedfinishedsquarefeet','fips','transactionid','month']]
+    X_validate = validate_scaled[[ 'calculatedfinishedsquarefeet']]
     y_validate = validate_scaled['taxvaluedollarcnt']
 
-    X_test = test_scaled[['bedroomcnt', 'bathroomcnt', 'taxvaluedollarcnt', 'calculatedfinishedsquarefeet','fips','transactionid','month']]
+    X_test = test_scaled[['calculatedfinishedsquarefeet']]
     y_test = test_scaled['taxvaluedollarcnt']
 
 
