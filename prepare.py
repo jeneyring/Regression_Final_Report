@@ -1,18 +1,27 @@
 import pandas as pd
 import env
 import numpy as np
+from wrangle import wrangle_zillow
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 
 
 
-def split_data():
-#Splitting the data into a train/test split of 80/20
-#Further splits for train/validate of 70/30
-    train_validate, test = train_test_split(df, test_size=.2, random_state=123)
-    train, validate = train_test_split(train_validate, test_size=.3, random_state=123)
-    print(train.shape, validate.shape, test.shape)
-
+def split_data(df):
+    '''
+    take in a DataFrame and return train, validate, and test DataFrames; stratify on species.
+    return train, validate, test DataFrames.
+    '''
+    
+    # splits df into train_validate and test using train_test_split() stratifying on species to get an even mix of each species
+    train_validate, test = train_test_split(df, test_size=.2, random_state=123, stratify=df.fips)
+    
+    # splits train_validate into train and validate using train_test_split() stratifying on species to get an even mix of each species
+    train, validate = train_test_split(train_validate, 
+                                       test_size=.3, 
+                                       random_state=123, 
+                                       stratify=train_validate.fips)
+    return train, validate, test
 #to use, type 'split_data('add your df here')
 
 #____________________________________________________________

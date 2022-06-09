@@ -1,31 +1,15 @@
 import pandas as pd
 import os
 from env import get_db_url
-import matplotlib as plt
-import seaborn as sns
 import numpy as np
 
-#created a function for all project imports, so as not to crowd notebook:
-def imports():
-    import pandas as pd
-    import os
-    from env import get_db_url
-    import matplotlib as plt
-    import seaborn as sns
-    import numpy as np
-
-
 """
-This is the acquire file for the Zillow 2017 predictions database. 
-These files will be pulling the zillow data from the MySQL database to 
-collect the properties_2017, predictions_2017 and propertylandusetype tables.
-
-How to use this py file: 
-Use `from acquire import wrangle_zillow` at the top of your notebook.
-
+USAGE: 
+Use `from wrangle import wrangle_zillow` at the top of your notebook.
+This 
 """
 def get_zillow_data():
-    """Will try to read the collected zillow.csv file first """
+    """Seeks to read the cached zillow.csv first """
     filename = "zillow.csv"
 
     if os.path.isfile(filename):
@@ -34,16 +18,16 @@ def get_zillow_data():
         return get_new_zillow_data()
 
 def get_new_zillow_data():
-    """Returns a dataframe of all 2017 transactioned properties that are classed as Single Family Residential"""
+    """Returns a dataframe of all 2017 properties that are Single Family Residential"""
 
     sql = """
     select 
-    bedroomcnt, bathroomcnt, calculatedfinishedsquarefeet, taxvaluedollarcnt, transactiondate, fips
+    bedroomcnt, bathroomcnt, calculatedfinishedsquarefeet, taxvaluedollarcnt, yearbuilt, fips
     from properties_2017
     join propertylandusetype using (propertylandusetypeid)
     join predictions_2017 using (parcelid)
-    where propertylandusedesc = "Single Family Residential
-    and predictions_2017.transactiondate like '2017%%' "
+    where propertylandusedesc = "Single Family Residential"
+    and predictions_2017.transactiondate like '2017%%'
     """
     return pd.read_sql(sql, get_db_url("zillow"))
 
@@ -54,7 +38,7 @@ def handle_nulls(df):
     return df
 
 
-def change_dtypes(df):
+def optimize_types(df):
     # Convert some columns to integers
     # fips, yearbuilt, and bedrooms can be integers
     df["fips"] = df["fips"].astype(int)
@@ -64,20 +48,19 @@ def change_dtypes(df):
     return df
 
 
-
 def handle_outliers(df):
-    """Manually handle outliers that do not represent properties likely for 99.8% of buyers and zillow visitors"""
+    """Manually handle outliers that do not represent properties likely for 99% of buyers and zillow visitors"""
     df = df[df.calculatedfinishedsquarefeet <= 9_000]
     
     df = df[df.calculatedfinishedsquarefeet >= 200]
 
     df = df[df.bedroomcnt <= 6]
 
-    df=df[df.bedroomcnt != 0]
+    df = df[df.bedroomcnt != 0]
 
     df = df[df.bathroomcnt <= 6]
 
-    df=df[df.bathroomcnt != 0]
+    df = df[df.bathroomcnt != 0]
 
     df = df[df.taxvaluedollarcnt <= 2_500_000]
 
@@ -102,9 +85,9 @@ def clearing_fips(df):
     df['county'] = np.select(fips, counties)
     return df
 
-def month_sales(df):
-    df['month'] = pd.DatetimeIndex(df['transactiondate']).month
-    return df
+#def month_sales(df):
+    #df['month'] = pd.DatetimeIndex(pe['transactiondate']).month
+    #return df
 
 
 def wrangle_zillow():
@@ -119,15 +102,14 @@ def wrangle_zillow():
 
     df = handle_nulls(df)
 
-    df = change_dtypes(df)
+    df = optimize_types(df)
 
     df = handle_outliers(df)
-    
+
     df = clearing_fips(df)
 
-    df = month_sales(df)
+    #df = month_sales(df)
 
     df.to_csv("zillow.csv", index=False)
 
     return df
-
